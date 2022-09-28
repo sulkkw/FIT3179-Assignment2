@@ -1,0 +1,70 @@
+{
+
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "background":"#FFEED9",
+    "width":"container",
+    "height":350, 
+
+    "data": {"url" : "https://raw.githubusercontent.com/sulkkw/FIT3179-Assignment2/main/Data/top10_suicides_by_agegroup_100k.csv"}, 
+
+    "selection": {"agegroup_highlight":{
+        "type":"multi", 
+        "fields": ["age"], 
+        "bind": "legend"
+        }
+    }, 
+    "mark" : {"type": "bar", "cursor": "pointer"}, 
+
+    "encoding": {
+        "x":{
+            "field": "suicides_per_100k", 
+            "aggregate": "mean",
+            "type": "quantitative",
+            "title":"Average Suicide Rate per 100k"
+
+        },
+
+        "y":{
+            "field": "country", 
+            "type": "ordinal", 
+            "title": null 
+
+        },
+
+        "color":{
+            "field": "age", 
+            "type": "nominal", 
+            "scale": {
+                "domain": ["5-14 years", "15-24 years", "25-34 years", "35-54 years", "55-74 years", "75+ years"], 
+                "range": ["#e41a1c","#984ea3","#ff7f00","#a6cee3","#377eb8","#a65628"] 
+
+
+            }, 
+            "title": "Age Group"
+
+
+        }, 
+
+        "opacity":{ 
+            "condition":{"selection": "agegroup_highlight", "value": 0.6},
+            "value": 0.2
+
+        },
+
+        "tooltip":[
+            {"field":"age", "type": "nominal", "title": "Age Group"}, 
+            {
+                "field": "suicides_per_100k", 
+                "aggregate": "mean",
+                "type": "quantitative",
+                "title": "Average Suicide Rate",
+                "format":".2f"
+            }
+
+        ]
+
+    }, 
+    "config": {"axis": {"grid": false},"view": {"stroke": "transparent"}}
+
+
+}

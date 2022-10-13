@@ -1,23 +1,32 @@
 {
   "$schema": "https://vega.github.io/schema/vega/v5.json",
-  "autosize": {"type": "fit-x", "contains": "padding"},
   "background": "#FFEED9",
   "padding": 5,
+  "width": 900,
   "height": 500,
-  "title": {
-    "text": "World Suicide Rate (1985-2016)",
-    "font": "sans-serif",
-    "fontSize": {"signal": "20"},
-    "frame": "group"
-  },
   "data": [
     {
-      "name": "source_2",
+      "name": "source_0",
+      "url": "https://raw.githubusercontent.com/sulkkw/FIT3179-Week9-HW/main/js/ne_110m_ocean.json",
+      "format": {"type": "topojson", "feature": "ne_110m_ocean"}
+    },
+    {
+      "name": "source_1",
+      "url": "https://raw.githubusercontent.com/sulkkw/FIT3179-Week9-HW/main/js/bounding_box.json",
+      "format": {"type": "topojson", "feature": "ne_110m_wgs84_bounding_box"}
+    },
+    {
+      "name": "source_3",
+      "url": "https://raw.githubusercontent.com/sulkkw/FIT3179-Week9-HW/main/js/graticules.json",
+      "format": {"type": "topojson", "feature": "ne_110m_graticules_30"}
+    },
+    {
+      "name": "source_5",
       "url": "https://raw.githubusercontent.com/sulkkw/FIT3179-Week9-HW/main/Data/suicides_by_country_100k.csv",
       "format": {"type": "csv", "delimiter": ","}
     },
     {
-      "name": "source_0",
+      "name": "source_2",
       "url": "https://raw.githubusercontent.com/sulkkw/FIT3179-Week9-HW/main/js/basemap_2.json",
       "format": {"type": "topojson", "feature": "ne_110m_admin_0_countries"},
       "transform": [
@@ -29,7 +38,7 @@
       ]
     },
     {
-      "name": "source_1",
+      "name": "source_4",
       "url": "https://raw.githubusercontent.com/sulkkw/FIT3179-Week9-HW/main/js/basemap.json",
       "format": {
         "type": "topojson",
@@ -44,7 +53,7 @@
         },
         {
           "type": "lookup",
-          "from": "source_2",
+          "from": "source_5",
           "key": "country",
           "fields": ["properties.NAME"],
           "values": ["suicides_per_100k"]
@@ -65,20 +74,10 @@
     {
       "name": "projection",
       "size": {"signal": "[width, height]"},
-      "fit": {"signal": "[data('source_0'), data('source_1')]"},
-      "type": "equirectangular"
-    }
-  ],
-  "signals": [
-    {
-      "name": "width",
-      "init": "isFinite(containerSize()[0]) ? containerSize()[0] : 200",
-      "on": [
-        {
-          "update": "isFinite(containerSize()[0]) ? containerSize()[0] : 200",
-          "events": "window:resize"
-        }
-      ]
+      "fit": {
+        "signal": "[data('source_0'), data('source_1'), data('source_2'), data('source_3'), data('source_4')]"
+      },
+      "type": "equalEarth"
     }
   ],
   "marks": [
@@ -91,6 +90,33 @@
         "update": {
           "fill": {"value": "lightgray"},
           "stroke": {"value": "white"},
+          "ariaRoleDescription": {"value": "geoshape"}
+        }
+      },
+      "transform": [{"type": "geoshape", "projection": "projection"}]
+    },
+    {
+      "name": "layer_1_marks",
+      "type": "shape",
+      "style": ["geoshape"],
+      "from": {"data": "source_1"},
+      "encode": {
+        "update": {
+          "fill": {"value": "lightblue"},
+          "ariaRoleDescription": {"value": "geoshape"}
+        }
+      },
+      "transform": [{"type": "geoshape", "projection": "projection"}]
+    },
+    {
+      "name": "layer_2_marks",
+      "type": "shape",
+      "style": ["geoshape"],
+      "from": {"data": "source_2"},
+      "encode": {
+        "update": {
+          "fill": {"value": "lightgray"},
+          "stroke": {"value": "black"},
           "tooltip": {
             "signal": "isValid(datum[\"note\"]) ? datum[\"note\"] : \"\"+datum[\"note\"]"
           },
@@ -103,10 +129,24 @@
       "transform": [{"type": "geoshape", "projection": "projection"}]
     },
     {
-      "name": "layer_1_marks",
+      "name": "layer_3_marks",
       "type": "shape",
       "style": ["geoshape"],
-      "from": {"data": "source_1"},
+      "from": {"data": "source_3"},
+      "encode": {
+        "update": {
+          "fill": {"value": null},
+          "stroke": {"value": "black"},
+          "ariaRoleDescription": {"value": "geoshape"}
+        }
+      },
+      "transform": [{"type": "geoshape", "projection": "projection"}]
+    },
+    {
+      "name": "layer_4_marks",
+      "type": "shape",
+      "style": ["geoshape"],
+      "from": {"data": "source_4"},
       "encode": {
         "update": {
           "cursor": {"value": "pointer"},
@@ -114,7 +154,7 @@
             "scale": "color",
             "field": "Suicides Rate Per 100,000 population"
           },
-          "fillOpacity": {"value": 0.9},
+          "fillOpacity": {"value": 0.7},
           "strokeWidth": [
             {"test": "(length(data(\"select_store\")))", "value": 2},
             {"value": 0}
@@ -124,7 +164,7 @@
           },
           "ariaRoleDescription": {"value": "geoshape"},
           "description": {
-            "signal": "\"Suicide rate per 100K population: \" + (format(datum[\"Suicides Rate Per 100,000 population\"], \"\")) + \"; Country: \" + (isValid(datum[\"properties.NAME\"]) ? datum[\"properties.NAME\"] : \"\"+datum[\"properties.NAME\"]) + \"; Suicides Rate Per 100,000 population: \" + (format(datum[\"Suicides Rate Per 100,000 population\"], \".2f\"))"
+            "signal": "\"Suicides Rate Per 100,000 population: \" + (format(datum[\"Suicides Rate Per 100,000 population\"], \"\")) + \"; Country: \" + (isValid(datum[\"properties.NAME\"]) ? datum[\"properties.NAME\"] : \"\"+datum[\"properties.NAME\"])"
           }
         }
       },
@@ -136,18 +176,9 @@
       "name": "color",
       "type": "threshold",
       "domain": [
-        0,
+        200,
         1000,
-        2000,
-        3000,
-        4000,
         5000,
-        6000,
-        7000,
-        8000,
-        9000,
-        10000,
-        11000,
         12000
       ],
       "range": {"scheme": "reds"},
@@ -156,11 +187,11 @@
   ],
   "legends": [
     {
-      "title": "Suicide rate per 100K population",
       "fill": "color",
       "labelOverlap": "greedy",
-      "symbolType": "circle"
+      "symbolType": "circle",
+      "title": "Suicides Rate Per 100,000 population"
     }
   ],
-  "config": {"style": {"cell": {"stroke": null}}}
+  "config": {}
 }

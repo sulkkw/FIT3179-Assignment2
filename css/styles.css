@@ -60,10 +60,8 @@ h3{
 }
 
 #waffle{
-    justify-content: center;
     display: flex;
-    margin: auto;
-    margin-top: 15%;
+    justify-content: center;
 }
 
 #stack{

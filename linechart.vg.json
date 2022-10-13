@@ -4,12 +4,6 @@
   "background": "#FFEED9",
   "padding": 5,
   "height": 350,
-  "title": {
-    "text": "Overall World Suicide Rate Per Year",
-    "font": "sans-serif",
-    "fontSize": {"signal": "20"},
-    "frame": "group"
-  },
   "style": "cell",
   "data": [
     {
